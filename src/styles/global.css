@@ -1,0 +1,920 @@
+/* ============================================================
+   STAMMER — v2 "Overtop cut"
+   Tokens
+   ============================================================ */
+:root {
+    --ink: #0b0b0b;          /* fundo base */
+    --coal: #131313;         /* painéis */
+    --smoke: #1d1d1d;        /* bordas/linhas */
+    --blood: #c00c12;        /* vermelho vivo */
+    --blood-deep: #6e0308;   /* vermelho profundo */
+    --bone: #eae6de;         /* texto principal */
+    --steel: #8f8b85;        /* texto secundário */
+
+    --display: 'Anton', Impact, sans-serif;
+    --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --body: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
+
+    --header-h: 76px;
+}
+
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    background-color: var(--ink);
+    color: var(--bone);
+    font-family: var(--body);
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+    /* textura de grão sutil em todo o site */
+    background-image:
+        radial-gradient(ellipse at 50% -20%, rgba(192, 12, 18, 0.06), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection { background: var(--blood); color: var(--bone); }
+
+img { max-width: 100%; display: block; }
+
+/* ============================================================
+   Progress bar
+   ============================================================ */
+.progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    height: 3px;
+    background: transparent;
+}
+.progress-bar {
+    height: 3px;
+    background: var(--blood);
+    width: 0%;
+}
+
+/* ============================================================
+   Header / Nav
+   ============================================================ */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-h);
+    z-index: 100;
+    padding: 0 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(11, 11, 11, 0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--smoke);
+    transition: height 0.3s ease, background 0.3s ease;
+}
+header.header-shrink {
+    height: 60px;
+    background: rgba(11, 11, 11, 0.97);
+}
+
+.logo-link { display: flex; align-items: center; }
+.logo { height: 44px; width: auto; max-width: 150px; }
+header.header-shrink .logo { height: 36px; }
+
+nav ul {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 28px;
+}
+
+nav ul li a {
+    font-family: var(--condensed);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--bone);
+    padding: 6px 2px;
+    position: relative;
+    transition: color 0.25s ease;
+}
+nav ul li a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--blood);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+}
+nav ul li a:hover,
+nav ul li a.active { color: var(--blood); }
+nav ul li a:hover::after,
+nav ul li a.active::after { transform: scaleX(1); }
+
+nav ul li a:focus-visible,
+.lang-btn:focus-visible,
+button:focus-visible,
+.hero-btn:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--blood);
+    outline-offset: 3px;
+}
+
+/* idioma */
+.lang-btns { display: flex; align-items: center; gap: 6px; }
+.lang-sep { color: var(--steel); font-family: var(--condensed); }
+.lang-btn {
+    background: none;
+    border: none;
+    color: var(--steel);
+    font-family: var(--condensed);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    padding: 4px 2px;
+    transition: color 0.25s ease;
+}
+.lang-btn:hover { color: var(--bone); }
+.lang-btn.active { color: var(--blood); }
+
+/* menu hambúrguer */
+.menu-btn {
+    display: none;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    position: relative;
+    z-index: 102;
+}
+.menu-btn__burger,
+.menu-btn__burger::before,
+.menu-btn__burger::after {
+    content: '';
+    position: absolute;
+    width: 28px;
+    height: 2px;
+    background: var(--bone);
+    transition: all 0.3s ease;
+    left: 3px;
+}
+.menu-btn__burger { top: 16px; }
+.menu-btn__burger::before { top: -9px; left: 0; }
+.menu-btn__burger::after { top: 9px; left: 0; }
+.menu-btn.open .menu-btn__burger { background: transparent; }
+.menu-btn.open .menu-btn__burger::before { transform: rotate(45deg); top: 0; background: var(--blood); }
+.menu-btn.open .menu-btn__burger::after { transform: rotate(-45deg); top: 0; background: var(--blood); }
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero-section {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    background: url("/IMG/integrantes da banda.png") center 28% / cover no-repeat;
+    filter: grayscale(35%) contrast(1.08) brightness(0.55);
+    z-index: -2;
+}
+.hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(11,11,11,0.75) 0%, rgba(11,11,11,0.25) 40%, rgba(11,11,11,0.92) 100%);
+}
+
+.hero-grain {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+.hero-content { padding: 0 20px; }
+
+.hero-eyebrow {
+    font-family: var(--condensed);
+    font-weight: 500;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    font-size: clamp(0.7rem, 1.4vw, 0.95rem);
+    color: var(--steel);
+    margin-bottom: 14px;
+}
+
+.hero-title {
+    font-family: var(--display);
+    font-size: clamp(4.2rem, 16vw, 12rem);
+    line-height: 0.95;
+    letter-spacing: 0.04em;
+    color: var(--bone);
+    text-shadow: 0 6px 40px rgba(0, 0, 0, 0.8);
+    animation: heroIn 0.9s ease both;
+}
+
+.hero-tagline {
+    font-family: var(--condensed);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5em;
+    font-size: clamp(0.85rem, 2vw, 1.25rem);
+    color: var(--blood);
+    margin: 18px 0 40px;
+    animation: heroIn 0.9s 0.15s ease both;
+}
+
+@keyframes heroIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-btn {
+    display: inline-block;
+    font-family: var(--condensed);
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--bone);
+    padding: 16px 44px;
+    border: 2px solid var(--blood);
+    background: transparent;
+    transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+    animation: heroIn 0.9s 0.3s ease both;
+}
+.hero-btn:hover {
+    background: var(--blood);
+    box-shadow: 0 0 30px rgba(192, 12, 18, 0.45);
+}
+
+.scroll-cue {
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 40px;
+    border: 2px solid var(--steel);
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+}
+.scroll-cue span {
+    width: 3px;
+    height: 8px;
+    background: var(--blood);
+    border-radius: 2px;
+    margin-top: 7px;
+    animation: cue 1.6s ease-in-out infinite;
+}
+@keyframes cue {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    60% { transform: translateY(12px); opacity: 0.2; }
+}
+
+/* ============================================================
+   Seções — base
+   ============================================================ */
+.section {
+    padding: 110px 6vw;
+    position: relative;
+}
+.section:nth-of-type(even) { background: var(--coal); }
+
+.section-title {
+    font-family: var(--display);
+    font-size: clamp(2.6rem, 8vw, 5.2rem);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--bone);
+    margin-bottom: 60px;
+    position: relative;
+    padding-left: 22px;
+}
+.section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8%;
+    height: 84%;
+    width: 6px;
+    background: var(--blood);
+    transform: skewY(-14deg);
+}
+
+/* ============================================================
+   Biografia
+   ============================================================ */
+.bio-container {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 60px;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.bio-text p { margin-bottom: 22px; color: var(--steel); font-size: 1.05rem; }
+.bio-text .bio-highlight {
+    color: var(--bone);
+    font-family: var(--condensed);
+    font-weight: 600;
+    font-size: 1.35rem;
+    line-height: 1.5;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-left: 4px solid var(--blood);
+    padding-left: 18px;
+}
+.bio-text .bio-credit {
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--steel);
+}
+
+.bio-image {
+    position: relative;
+}
+.bio-image img {
+    width: 100%;
+    filter: grayscale(25%) contrast(1.05);
+    border: 1px solid var(--smoke);
+    transition: filter 0.4s ease;
+}
+.bio-image:hover img { filter: grayscale(0%) contrast(1.05); }
+.bio-image::after {
+    content: '';
+    position: absolute;
+    inset: 14px -14px -14px 14px;
+    border: 1px solid var(--blood-deep);
+    z-index: -1;
+}
+
+/* ============================================================
+   Vídeos — playlist
+   ============================================================ */
+.playlist-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.video-main {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border: 1px solid var(--smoke);
+}
+.video-main iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.video-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+.video-list::-webkit-scrollbar { width: 6px; }
+.video-list::-webkit-scrollbar-thumb { background: var(--smoke); }
+
+.video-thumb {
+    display: grid;
+    grid-template-columns: 132px 1fr;
+    gap: 12px;
+    align-items: center;
+    background: var(--coal);
+    border: 1px solid var(--smoke);
+    cursor: pointer;
+    transition: border-color 0.25s ease, transform 0.25s ease;
+    text-align: left;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+}
+.video-thumb:hover { border-color: var(--blood); transform: translateX(4px); }
+.video-thumb.active { border-color: var(--blood); }
+.video-thumb img { width: 132px; height: 74px; object-fit: cover; }
+.video-thumb .vt-title {
+    font-family: var(--condensed);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bone);
+    padding-right: 10px;
+    line-height: 1.35;
+}
+.video-thumb.active .vt-title { color: var(--blood); }
+
+/* ============================================================
+   Álbum — setlist player
+   ============================================================ */
+.album-container {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+.album-side { text-align: center; }
+.album-cover {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border: 1px solid var(--smoke);
+    filter: contrast(1.05);
+    margin-bottom: 22px;
+}
+
+.player-status { margin-bottom: 18px; }
+.status-label {
+    display: block;
+    font-family: var(--condensed);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--steel);
+    margin-bottom: 4px;
+}
+.now-playing {
+    display: block;
+    font-family: var(--condensed);
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bone);
+    min-height: 1.6em;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+}
+.controls button {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 2px solid var(--smoke);
+    background: transparent;
+    color: var(--bone);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+.controls button:hover { border-color: var(--blood); color: var(--blood); }
+.controls .play-btn {
+    width: 66px;
+    height: 66px;
+    border-color: var(--blood);
+    background: var(--blood);
+    color: var(--bone);
+    font-size: 1.2rem;
+}
+.controls .play-btn:hover {
+    background: transparent;
+    color: var(--blood);
+}
+
+.track-list { border-top: 1px solid var(--smoke); }
+.track {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 14px 10px;
+    border-bottom: 1px solid var(--smoke);
+    cursor: pointer;
+    transition: background 0.2s ease, padding-left 0.2s ease;
+}
+.track:hover { background: rgba(192, 12, 18, 0.08); padding-left: 18px; }
+.track.active { background: rgba(192, 12, 18, 0.14); }
+.track .t-num {
+    font-family: var(--condensed);
+    font-weight: 600;
+    color: var(--steel);
+    width: 30px;
+    flex: none;
+}
+.track .t-title {
+    font-family: var(--condensed);
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bone);
+    flex: 1;
+}
+.track.active .t-title { color: var(--blood); }
+.track .t-dur {
+    font-family: var(--condensed);
+    color: var(--steel);
+    letter-spacing: 0.08em;
+}
+
+/* ============================================================
+   Tour / Agenda
+   ============================================================ */
+.tour-container { max-width: 1000px; margin: 0 auto; }
+
+.tour-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.tour-caption {
+    caption-side: top;
+    text-align: left;
+    font-family: var(--condensed);
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--steel);
+    padding-bottom: 18px;
+    font-size: 0.85rem;
+}
+.tour-table td {
+    padding: 18px 12px;
+    border-bottom: 1px solid var(--smoke);
+    font-family: var(--condensed);
+    letter-spacing: 0.06em;
+    vertical-align: middle;
+}
+.tour-table tr { transition: background 0.2s ease; }
+.tour-table tbody tr:hover { background: rgba(192, 12, 18, 0.07); }
+
+.tour-date {
+    font-weight: 700;
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    color: var(--blood);
+    white-space: nowrap;
+}
+.tour-city { font-weight: 600; font-size: 1.1rem; text-transform: uppercase; color: var(--bone); }
+.tour-venue { color: var(--steel); font-size: 1.05rem; }
+.tour-link a {
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--bone);
+    border: 1px solid var(--blood);
+    padding: 7px 16px;
+    transition: background 0.25s ease;
+    white-space: nowrap;
+}
+.tour-link a:hover { background: var(--blood); }
+
+.tour-empty td {
+    text-align: center;
+    color: var(--steel);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 40px 12px;
+}
+
+.tour-note {
+    margin-top: 28px;
+    color: var(--steel);
+    font-family: var(--condensed);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+}
+
+/* ============================================================
+   Fotos — masonry
+   ============================================================ */
+.gallery-container {
+    columns: 3 320px;
+    column-gap: 14px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+.gallery-item {
+    break-inside: avoid;
+    margin-bottom: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid var(--smoke);
+}
+.gallery-item img {
+    width: 100%;
+    filter: grayscale(30%) contrast(1.05);
+    transition: transform 0.5s ease, filter 0.4s ease;
+}
+.gallery-item:hover img {
+    transform: scale(1.05);
+    filter: grayscale(0%) contrast(1.05);
+}
+.gallery-item::after {
+    content: '+';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--display);
+    font-size: 3rem;
+    color: var(--bone);
+    background: rgba(192, 12, 18, 0.35);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.gallery-item:hover::after { opacity: 1; }
+
+/* Modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 11, 11, 0.95);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+.modal.open { display: flex; }
+.modal-content { position: relative; max-width: 92vw; max-height: 90vh; }
+.modal-content img { max-width: 92vw; max-height: 88vh; object-fit: contain; border: 1px solid var(--smoke); }
+.close-modal {
+    position: absolute;
+    top: -46px;
+    right: -6px;
+    background: none;
+    border: none;
+    color: var(--bone);
+    font-size: 2.4rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+.close-modal:hover { color: var(--blood); }
+
+/* ============================================================
+   Contato
+   ============================================================ */
+.contact-section { text-align: center; }
+.contact-section .section-title { text-align: left; }
+.contact-container { max-width: 700px; margin: 0 auto; }
+
+.contact-message {
+    font-family: var(--condensed);
+    font-weight: 500;
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--steel);
+    margin-bottom: 44px;
+}
+
+.socials {
+    display: flex;
+    justify-content: center;
+    gap: 34px;
+    margin-bottom: 50px;
+}
+.social-link {
+    width: 66px;
+    height: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--smoke);
+    border-radius: 50%;
+    color: var(--bone);
+    font-size: 1.6rem;
+    text-decoration: none;
+    transition: border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+.social-link:hover {
+    border-color: var(--blood);
+    color: var(--blood);
+    transform: translateY(-4px);
+}
+
+.whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--condensed);
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--bone);
+    background: var(--blood);
+    padding: 16px 40px;
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+.whatsapp-btn:hover {
+    background: var(--blood-deep);
+    box-shadow: 0 0 30px rgba(192, 12, 18, 0.4);
+}
+
+/* WhatsApp float */
+.whatsapp-float {
+    position: fixed;
+    bottom: 26px;
+    right: 26px;
+    width: 58px;
+    height: 58px;
+    background: #25d366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.7rem;
+    text-decoration: none;
+    z-index: 90;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+    transition: transform 0.25s ease;
+}
+.whatsapp-float:hover { transform: scale(1.08); }
+.whatsapp-tooltip {
+    position: absolute;
+    right: 70px;
+    background: var(--coal);
+    border: 1px solid var(--smoke);
+    color: var(--bone);
+    font-family: var(--condensed);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    padding: 8px 14px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+.whatsapp-float:hover .whatsapp-tooltip { opacity: 1; }
+
+/* ============================================================
+   Footer
+   ============================================================ */
+footer {
+    text-align: center;
+    padding: 60px 20px 40px;
+    border-top: 1px solid var(--smoke);
+    background: var(--ink);
+}
+.logo_footer {
+    height: 44px;
+    width: auto;
+    margin: 0 auto 18px;
+    opacity: 0.85;
+}
+footer p {
+    font-family: var(--condensed);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: var(--steel);
+}
+
+/* ============================================================
+   Responsivo
+   ============================================================ */
+@media (max-width: 900px) {
+    .bio-container,
+    .playlist-container,
+    .album-container {
+        grid-template-columns: 1fr;
+    }
+    .album-side { max-width: 380px; margin: 0 auto; }
+    .video-list {
+        flex-direction: row;
+        max-height: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 8px;
+    }
+    .video-thumb { flex: 0 0 260px; }
+}
+
+@media (max-width: 768px) {
+    header { padding: 0 20px; }
+    .menu-btn { display: block; }
+
+    nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        height: 100vh;
+        background: rgba(11, 11, 11, 0.98);
+        backdrop-filter: blur(14px);
+        z-index: 101;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: right 0.45s cubic-bezier(0.77, 0.2, 0.05, 1);
+    }
+    nav.open { right: 0; }
+
+    nav ul {
+        flex-direction: column;
+        gap: 26px;
+        text-align: center;
+    }
+    nav ul li a { font-size: 1.5rem; }
+
+    .section { padding: 80px 6vw; }
+
+    .tour-table, .tour-table tbody, .tour-table tr, .tour-table td { display: block; width: 100%; }
+    .tour-table td { border-bottom: none; padding: 4px 0; }
+    .tour-table tbody tr { border-bottom: 1px solid var(--smoke); padding: 18px 4px; }
+    .tour-link { margin-top: 8px; }
+
+    .close-modal { top: -44px; right: 0; }
+}
+
+/* ============================================================
+   Acessibilidade — reduz movimento
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================================
+   Spotify embed
+   ============================================================ */
+.spotify-container {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+.spotify-embed {
+    border: 1px solid var(--smoke);
+    background: var(--coal);
+    padding: 6px;
+    margin-bottom: 34px;
+}
+.spotify-embed iframe { display: block; border-radius: 12px; }
+.spotify-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--condensed);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--bone);
+    border: 2px solid #1db954;
+    padding: 14px 36px;
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+.spotify-cta:hover {
+    background: #1db954;
+    box-shadow: 0 0 30px rgba(29, 185, 84, 0.35);
+}
+.spotify-cta .fa-spotify { font-size: 1.3rem; }
